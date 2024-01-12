@@ -30,7 +30,7 @@ return (
             <Nav navbar></Nav>
             </Collapse>
             <Button
-            color="primary"
+            color="danger"
             onClick={(e) => {
                 e.preventDefault();
                 setOpen(false);

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
-import { useSubmit } from "react-router-dom"
+import { useNavigate, useSubmit } from "react-router-dom"
 import { getOrders } from "../../managers/orderManager"
 import { Button, Table } from "reactstrap"
 
 export const OrderList = () => {
   const [orders, setOrders] = useState([])
+
+  const navigate = useNavigate()
 
   const getAndSetOrders = () => {
     getOrders().then(arr => setOrders(arr))
@@ -29,6 +31,11 @@ export const OrderList = () => {
     return new Intl.DateTimeFormat('en-US', options).format(date);
   }
 
+  const handleDetailsBtn = (e, id) => {
+    e.preventDefault()
+    navigate(`${id}`)
+  }
+
   return (
     <>
       <header>
@@ -42,6 +49,7 @@ export const OrderList = () => {
             <th>Employee</th>
             <th>Driver</th>
             <th>Total Price</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -61,6 +69,10 @@ export const OrderList = () => {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}</td>
+              <td className="btns-column">
+                <Button color="success" onClick={e => handleDetailsBtn(e, o.id)}>Details</Button>
+                <Button color="danger">Delete Order</Button>
+              </td>
             </tr>
           )
           )}
