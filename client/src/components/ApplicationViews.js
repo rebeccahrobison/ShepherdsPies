@@ -2,27 +2,21 @@ import { Route, Routes } from "react-router-dom";
 import { AuthorizedRoute } from "./auth/AuthorizedRoute";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
-import { Home } from "./Home";
-import { UserProfileList } from "./userProfiles/userProfileList";
-import { UserProfileDetails } from "./userProfiles/UserProfileDetails";
-import { ChoresList } from "./chores/ChoresList";
-import { ChoreDetails } from "./chores/ChoreDetails";
-import { CreateChore } from "./chores/CreateChore";
-import { UserChores } from "./chores/UserChores";
+import { OrderList } from "./orders/OrderList";
 
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
   return (
     <Routes>
       <Route path="/">
-        {/* <Route
+        <Route
           index
           element={
             <AuthorizedRoute loggedInUser={loggedInUser}>
-              <Home />
+              <OrderList />
             </AuthorizedRoute>
           }
-        /> */}
+        />
 
         <Route
           path="login"
