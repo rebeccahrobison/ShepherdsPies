@@ -30,7 +30,7 @@ public class OrderController : ControllerBase
         .ThenInclude(p => p.PizzaSize)
       .Include(o => o.Pizzas)
         .ThenInclude(p => p.PizzaToppings)
-        // .ThenInclude(t => t.Toppings)
+      // .ThenInclude(t => t.Topping)
       .OrderByDescending(o => o.OrderDate)
       .Select(o => new OrderDTO
       {
@@ -75,7 +75,7 @@ public class OrderController : ControllerBase
             Id = pt.Id,
             PizzaId = pt.PizzaId,
             ToppingId = pt.ToppingId,
-            // Toppings = pt.Toppings.Select(t => new ToppingDTO
+            // Topping = pt.Toppings.Select(t => new ToppingDTO
             // {
             //   Id = t.Id,
             //   Name = t.Name
@@ -83,6 +83,85 @@ public class OrderController : ControllerBase
           }).ToList(),
         }).ToList()
       }).ToList());
+  }
+
+  [HttpGet("{id}")]
+  [Authorize]
+  public IActionResult GetOrderById(int id)
+  {
+    Order order = _dbContext
+      .Orders
+      .Include(o => o.Driver)
+        .ThenInclude(d => d.IdentityUser)
+      .Include(o => o.Employee)
+        .ThenInclude(e => e.IdentityUser)
+      .Include(o => o.Pizzas)
+        .ThenInclude(p => p.PizzaSize)
+      .Include(o => o.Pizzas)
+        .ThenInclude(p => p.Cheese)
+      .Include(o => o.Pizzas)
+        .ThenInclude(p => p.Sauce)
+      .Include(o => o.Pizzas)
+        .ThenInclude(p => p.PizzaToppings)
+          .ThenInclude(pt => pt.Topping)
+      .SingleOrDefault(o => o.Id == id);
+
+    if (order == null)
+    {
+      return NotFound();
+    }
+
+    return Ok(new OrderDTO
+    {
+      Id = order.Id,
+      OrderDate = order.OrderDate,
+      EmployeeId = order.EmployeeId,
+      DriverId = order.DriverId,
+      Tip = order.Tip,
+      Employee = new UserProfileDTO
+      {
+        Id = 1,
+        FirstName = order.Employee.FirstName,
+        LastName = order.Employee.LastName,
+        Address = order.Employee.Address,
+        Email = order.Employee.IdentityUser.Email,
+        UserName = order.Employee.IdentityUser.UserName
+      },
+      Driver = new UserProfileDTO
+      {
+        Id = 1,
+        FirstName = order.Employee.FirstName,
+        LastName = order.Employee.LastName,
+        Address = order.Employee.Address,
+        Email = order.Employee.IdentityUser.Email,
+        UserName = order.Employee.IdentityUser.UserName
+      },
+      Pizzas = order.Pizzas.Select(p => new PizzaDTO
+      {
+        Id = p.Id,
+        PizzaSizeId = p.PizzaSizeId,
+        CheeseId = p.CheeseId,
+        SauceId = p.SauceId,
+        OrderId = p.OrderId,
+        PizzaSize = new PizzaSizeDTO
+        {
+          Id = p.PizzaSize.Id,
+          Size = p.PizzaSize.Size,
+          Price = p.PizzaSize.Price
+        },
+        PizzaToppings = p.PizzaToppings.Select(pt => new PizzaToppingDTO
+        {
+          Id = pt.Id,
+          PizzaId = pt.PizzaId,
+          ToppingId = pt.ToppingId,
+          Topping = new ToppingDTO
+          {
+            Id = pt.Topping.Id,
+            Name = pt.Topping.Name
+          }
+        }).ToList(),
+      }).ToList()
+    });
   }
 }
 
@@ -108,7 +187,10 @@ public class OrderController : ControllerBase
 
 
 
-          // Toppings = p.Toppings.Select(t => new ToppingDTO{
-          //   Id = t.Id,
-          //   Name = t.Name
-          // }).ToList()
+// Toppings = p.Toppings.Select(t => new ToppingDTO{
+//   Id = t.Id,
+//   Name = t.Name
+// }).ToList()
+
+
+    

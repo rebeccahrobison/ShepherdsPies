@@ -51,7 +51,7 @@ namespace ShepherdsPies.Migrations
                         new
                         {
                             Id = "c3aaeb97-d2ba-4a53-a521-4eea61e59b35",
-                            ConcurrencyStamp = "79c785b5-017a-426f-8577-1f4ebb428adf",
+                            ConcurrencyStamp = "4affaa3e-7495-41be-ad48-6faff59c8dc1",
                             Name = "Admin",
                             NormalizedName = "admin"
                         });
@@ -150,13 +150,13 @@ namespace ShepherdsPies.Migrations
                         {
                             Id = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6ab39367-a6e6-47bb-96fe-bfd499d8ab09",
+                            ConcurrencyStamp = "7911d465-39b3-4d3c-a2f8-406e6fc412b1",
                             Email = "admina@strator.comx",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAEAACcQAAAAEC1+i2jLCWTM6mp85m84PGQyK3ozQgO5xfWdrLtsZd3Xa/tEqORWQEbwHye0kezRlw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKzqVXA4FzEAQOl+Iml1waE8S9tkYicEZXjJcxMn5+eNFhle/bfINKhYATCNzQQL4g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "bbde269c-84e2-4c58-b8c6-a8345efc8b18",
+                            SecurityStamp = "acd998d3-0945-4819-b7de-bbb247e84403",
                             TwoFactorEnabled = false,
                             UserName = "Administrator"
                         });
@@ -451,6 +451,8 @@ namespace ShepherdsPies.Migrations
 
                     b.HasIndex("PizzaId");
 
+                    b.HasIndex("ToppingId");
+
                     b.ToTable("PizzaToppings");
 
                     b.HasData(
@@ -543,12 +545,7 @@ namespace ShepherdsPies.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("PizzaToppingId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("PizzaToppingId");
 
                     b.ToTable("Toppings");
 
@@ -746,13 +743,14 @@ namespace ShepherdsPies.Migrations
                         .HasForeignKey("PizzaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("ShepherdsPies.Models.Topping", b =>
-                {
-                    b.HasOne("ShepherdsPies.Models.PizzaTopping", null)
-                        .WithMany("Toppings")
-                        .HasForeignKey("PizzaToppingId");
+                    b.HasOne("ShepherdsPies.Models.Topping", "Topping")
+                        .WithMany()
+                        .HasForeignKey("ToppingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Topping");
                 });
 
             modelBuilder.Entity("ShepherdsPies.Models.UserProfile", b =>
@@ -774,11 +772,6 @@ namespace ShepherdsPies.Migrations
             modelBuilder.Entity("ShepherdsPies.Models.Pizza", b =>
                 {
                     b.Navigation("PizzaToppings");
-                });
-
-            modelBuilder.Entity("ShepherdsPies.Models.PizzaTopping", b =>
-                {
-                    b.Navigation("Toppings");
                 });
 #pragma warning restore 612, 618
         }
