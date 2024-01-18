@@ -149,6 +149,16 @@ public class OrderController : ControllerBase
           Size = p.PizzaSize.Size,
           Price = p.PizzaSize.Price
         },
+        Cheese = new CheeseDTO
+        {
+          Id = p.Cheese.Id,
+          Name = p.Cheese.Name
+        },
+        Sauce = new SauceDTO
+        {
+          Id = p.Sauce.Id,
+          Name = p.Sauce.Name
+        },
         PizzaToppings = p.PizzaToppings.Select(pt => new PizzaToppingDTO
         {
           Id = pt.Id,
@@ -162,6 +172,36 @@ public class OrderController : ControllerBase
         }).ToList(),
       }).ToList()
     });
+  }
+
+  [HttpPost]
+  [Authorize]
+  public IActionResult CreateOrder (Order order)
+  {
+    order.OrderDate = DateTime.Now;
+    _dbContext.Orders.Add(order);
+    _dbContext.SaveChanges();
+
+    foreach (var pizza in order.Pizzas)
+    {
+      pizza.OrderId = order.Id;
+      _dbContext.Pizzas.Add(pizza);
+      _dbContext.SaveChanges();
+
+      foreach (var toppingId in pizza.PizzaToppings.Select(pt => pt.ToppingId))
+      {
+        var pizzaTopping = new PizzaTopping
+        {
+          PizzaId = pizza.Id,
+          ToppingId = toppingId
+        };
+        _dbContext.PizzaToppings.Add(pizzaTopping);
+      }
+      _dbContext.SaveChanges();
+    }
+
+
+    return Created($"/api/order/{order.Id}", order);
   }
 }
 

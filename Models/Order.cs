@@ -8,8 +8,10 @@ public class Order
   public DateTime OrderDate { get; set; }
   public int EmployeeId { get; set; }
   public int? DriverId { get; set; }
+  
   [ForeignKey ("EmployeeId")]
-  public UserProfile Employee { get; set; }
+  public UserProfile? Employee { get; set; }
+  
   [ForeignKey ("DriverId")]
   public UserProfile? Driver { get; set; }
   public decimal? Tip { get; set; }

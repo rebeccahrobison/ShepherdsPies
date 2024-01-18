@@ -4,6 +4,7 @@ import Login from "./auth/Login";
 import Register from "./auth/Register";
 import { OrderList } from "./orders/OrderList";
 import { OrderDetails } from "./orders/OrderDetails";
+import { CreateOrder } from "./orders/CreateOrder";
 
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
@@ -23,6 +24,14 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
           element={
             <AuthorizedRoute loggedInUser={loggedInUser}>
               <OrderDetails />
+            </AuthorizedRoute>
+          }
+        />
+        <Route
+          path="neworder"
+          element={
+            <AuthorizedRoute loggedInUser={loggedInUser}>
+              <CreateOrder loggedInUser={loggedInUser}/>
             </AuthorizedRoute>
           }
         />
