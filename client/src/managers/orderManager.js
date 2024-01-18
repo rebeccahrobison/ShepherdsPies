@@ -17,3 +17,9 @@ export const createOrder = (order) => {
     body: JSON.stringify(order),
   }).then((res) => res.json);
 }
+
+export const deleteOrder = (id) => {
+  return fetch(`${_apiUrl}/${id}`, {
+    method: "DELETE"
+  })
+}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { useNavigate, useSubmit } from "react-router-dom"
-import { getOrders } from "../../managers/orderManager"
+import { useNavigate } from "react-router-dom"
+import { deleteOrder, getOrders } from "../../managers/orderManager"
 import { Button, Table } from "reactstrap"
 
 export const OrderList = () => {
@@ -41,6 +41,12 @@ export const OrderList = () => {
     navigate("neworder")
   }
 
+  const handleDeleteOrderBtn = (e, id) => {
+    e.preventDefault()
+
+    deleteOrder(id).then(() => getAndSetOrders())
+  }
+
   return (
     <>
       <header>
@@ -76,7 +82,7 @@ export const OrderList = () => {
               })}</td>
               <td className="btns-column">
                 <Button color="success" onClick={e => handleDetailsBtn(e, o.id)}>Details</Button>
-                <Button color="danger">Delete Order</Button>
+                <Button color="danger" onClick={e => handleDeleteOrderBtn(e, o.id)}>Delete Order</Button>
               </td>
             </tr>
           )
