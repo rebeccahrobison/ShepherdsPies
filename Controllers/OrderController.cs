@@ -182,24 +182,9 @@ public class OrderController : ControllerBase
     _dbContext.Orders.Add(order);
     _dbContext.SaveChanges();
 
-    foreach (var pizza in order.Pizzas)
-    {
-      pizza.OrderId = order.Id;
-      _dbContext.Pizzas.Add(pizza);
-      _dbContext.SaveChanges();
-
-      foreach (var toppingId in pizza.PizzaToppings.Select(pt => pt.ToppingId))
-      {
-        var pizzaTopping = new PizzaTopping
-        {
-          PizzaId = pizza.Id,
-          ToppingId = toppingId
-        };
-        _dbContext.PizzaToppings.Add(pizzaTopping);
-      }
-      _dbContext.SaveChanges();
-    }
-
+    order.Pizzas = _dbContext.Pizzas
+      .Include(p => p.PizzaToppings)
+      .Where(p => p.OrderId == order.Id).ToList();
 
     return Created($"/api/order/{order.Id}", order);
   }
@@ -219,6 +204,54 @@ public class OrderController : ControllerBase
 
     return NoContent();
   }
+
+  [HttpPatch("{id}")]
+  [Authorize]
+  public IActionResult UpdateOrder(int id, [FromBody] Order updatedOrder)
+  {
+    Order existingOrder = _dbContext.Orders
+      .Include(o => o.Pizzas)
+        .ThenInclude(p => p.PizzaToppings)
+      .SingleOrDefault(o => o.Id == id);
+
+    if (existingOrder == null)
+    {
+      return NotFound();
+    }
+
+    existingOrder.Tip = updatedOrder.Tip;
+    existingOrder.DriverId = updatedOrder.DriverId;
+    existingOrder.EmployeeId = updatedOrder.EmployeeId;
+    
+    foreach (var updatedPizza in updatedOrder.Pizzas)
+    {
+      var existingPizza = existingOrder.Pizzas.FirstOrDefault(p => p.Id == updatedPizza.Id);
+      if (existingPizza != null)
+      {
+        existingPizza.PizzaSizeId = updatedPizza.PizzaSizeId;
+        existingPizza.CheeseId = updatedPizza.CheeseId;
+        existingPizza.SauceId = updatedPizza.SauceId;
+        
+        foreach (var updatedTopping in updatedPizza.PizzaToppings)
+        {
+          var existingPizzaTopping = existingPizza.PizzaToppings.FirstOrDefault(t => t.Id == updatedTopping.Id);
+          if (existingPizzaTopping != null)
+          {
+            existingPizza.PizzaToppings.Add(new PizzaTopping
+            {
+              ToppingId = updatedTopping.ToppingId,
+              PizzaId = updatedPizza.Id
+            });
+          }
+        }
+      }
+    }
+    existingOrder.Pizzas = updatedOrder.Pizzas;
+
+    _dbContext.SaveChanges();
+
+    return Ok(existingOrder);
+  }
 }
 
 
@@ -237,16 +270,6 @@ public class OrderController : ControllerBase
 
 
 
-
-
-
-
-
-
-// Toppings = p.Toppings.Select(t => new ToppingDTO{
-//   Id = t.Id,
-//   Name = t.Name
-// }).ToList()
 
 
     

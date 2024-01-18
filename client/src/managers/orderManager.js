@@ -23,3 +23,13 @@ export const deleteOrder = (id) => {
     method: "DELETE"
   })
 }
+
+export const updateOrder = (order) => {
+  return fetch(`${_apiUrl}/${order.id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(order),
+  });
+}
