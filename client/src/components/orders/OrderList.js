@@ -36,11 +36,16 @@ export const OrderList = () => {
     navigate(`${id}`)
   }
 
+  const handleCreateNewOrderBtn = (e) => {
+    e.preventDefault()
+    navigate("neworder")
+  }
+
   return (
     <>
       <header>
         <h2>Orders</h2>
-        <Button color="success">Create New Order</Button>
+        <Button color="success" onClick={e => handleCreateNewOrderBtn(e)}>Create New Order</Button>
       </header>
       <Table>
         <thead>
