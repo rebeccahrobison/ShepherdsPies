@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
 import { getOrderById } from "../../managers/orderManager"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { Button } from "reactstrap"
 
 export const OrderDetails = () => {
   const [order, setOrder] = useState({})
 
   const { id } = useParams()
+  const navigate = useNavigate()
 
   useEffect(() => {
     getOrderById(id).then(obj => setOrder(obj))
@@ -21,13 +22,17 @@ export const OrderDetails = () => {
     });
   };
 
+  const handleEditOrderBtn = (e) => {
+    e.preventDefault()
+    navigate("editorder")
+  }
 
 
   return (
     <>
       <header>
         <h2>Order Details</h2>
-        <Button color="success">Edit Order</Button>
+        <Button color="success" onClick={e => handleEditOrderBtn(e)}>Edit Order</Button>
       </header>
       <div className="pizzas-container">
         {order.pizzas?.map((p, index) => (
